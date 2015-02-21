@@ -29,7 +29,7 @@ switch ($fstype) {
 			body {width:90%; height:90%; padding:0px; background-image:url('imgs/virt2real-board.jpg'); background-position:  left bottom; background-repeat: no-repeat;}
 			img  {border:none;}
 			a    {color:#7c7c7c;}
-			.window {background-color:#9a9a9a; padding:20px; box-shadow: 0px 0px 160px rgba(0,0,0,0.9); color:#ffffff; }
+			.window {padding:20px; box-shadow: 0px 0px 160px rgba(0,0,0,0.9); }
 			.window a {color:#0380ea;}
 
 
@@ -44,6 +44,8 @@ switch ($fstype) {
 				-moz-user-select: none;
 				-webkit-user-select: none;
 				-ms-user-select: none;
+
+				display: none;
 			}
 
 			#enabledRedButton {
@@ -57,9 +59,27 @@ switch ($fstype) {
 				background-color: orange;
 				color: white;
 			}
+
+			#gauge {
+				width: 200px;
+				height: 100px;
+			}
+
+			#ledSwitch .dx-switch-on {
+				color: #FC510D;
+			}
 		</style>
 	</head>
-	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+
+	<!--Scripts-->
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/globalize/0.1.1/globalize.min.js"></script>
+    <script src="http://cdn3.devexpress.com/jslib/14.2.4/js/dx.all.debug.js"></script> <!--Desktop UI widgets-->
+
+    <!--Styles-->
+    <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.light.css" />
+
 	<title><?php echo file_get_contents("/etc/virt2real/deviceid") . " " . $bootmode; ?></title>
 <body>
 
@@ -104,7 +124,43 @@ switch ($fstype) {
 					});
 			}
 		});
+
+	var gauge = $("#gauge").dxCircularGauge($.extend(true, {
+		geometry: {
+			startAngle: 180, endAngle: 0
+		},
+		scale: {
+			startValue: 0, endValue: 100,
+			majorTick: {
+				tickInterval: 100
+			}
+		}
+		}, {
+			value: 0,
+			valueIndicator: {
+				type: 'triangleNeedle',
+				color: '#FC510D'
+			}
+		})).dxCircularGauge("instance");
+
+	$("#ledSwitch").dxSwitch({
+		onText: "ВКЛ",
+		offText: "ВЫКЛ",
+	    onValueChanged: function (p) {
+	        var v = p.value ? "1" : "0";
+	        gauge.option("value", 50);
+			$.get("api/setgpio.php", {
+				num: 79,
+				dir: "output",
+				val: v
+			}).done(function () {
+
+	        	gauge.option("value", p.value ? 100 : 0);
+			});
+
+	    }
 	});
+});
 </script>
 
 
@@ -133,22 +189,9 @@ switch ($fstype) {
 			</td>
 		</tr>
 		<tr valign="top">
-			<td width="100%" align="left">
-				<p>Вы находитесь на дефолтной странице веб-сервера Виртурилки. Страница располагается в файловой системе по адресу /var/www_user и предназначена для любого пользовательского контента.</p>
-				<p>Можете смело заливать сюда свои файлы, не боясь повредить панель управления (админку).</p>
-				<p>Админка находится по адресу <a href="/admin">/admin</a></p>
-
-
-
-				<div class="led-button" id="enabledRedButton">
-					Включить
-				</div>
-
-				<div class="led-button" id="enabledWhiteButton">
-					Включить белый светодиодик
-				</div>
-
-
+			<td width="100%" align="center">
+                <div id="ledSwitch"></div>
+				<div id="gauge"></div>
 			</td>
 		</tr>
 	</table>
