@@ -21,6 +21,9 @@ switch ($fstype) {
 
 <html>
 	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="icon" href="/faviconBulb.ico" type="image/x-icon">
+
 		<style>
 			html {width:100%; height:100%; padding:0px; font-family: Arial; color:#7c7c7c;}
 			body {width:90%; height:90%; padding:0px; background-image:url('imgs/virt2real-board.jpg'); background-position:  left bottom; background-repeat: no-repeat;}
