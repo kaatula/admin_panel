@@ -28,10 +28,84 @@ switch ($fstype) {
 			a    {color:#7c7c7c;}
 			.window {background-color:#9a9a9a; padding:20px; box-shadow: 0px 0px 160px rgba(0,0,0,0.9); color:#ffffff; }
 			.window a {color:#0380ea;}
+
+
+			.led-button {
+				font-size: 54px;
+				min-width: 200px;
+				display: inline-block;
+				cursor: pointer;
+				text-align: middle;
+				padding: 20px;
+
+				-moz-user-select: none;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+			}
+
+			#enabledRedButton {
+				background-color: darkred;
+				color: white;
+
+			}
+
+
+			#enabledWhiteButton {
+				background-color: orange;
+				color: white;
+			}
 		</style>
 	</head>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
 	<title><?php echo file_get_contents("/etc/virt2real/deviceid") . " " . $bootmode; ?></title>
 <body>
+
+	<script>
+	$(document).ready(function () {
+		$("#enabledRedButton").click(function () {
+			var $button = $(this),
+				dataKey = "data-led-state";
+			if($button.attr(dataKey) === "enabled") {
+				$.post("api/setgpio.php?num=74&dir=output&val=0");
+				$button.attr(dataKey, "disabled")
+					.text("Включить")
+					.css("background-color", "darkred");
+			}  else {
+				$.post("api/setgpio.php?num=74&dir=output&val=1");
+				
+				$button.attr(dataKey, "enabled")
+					.text("Выключить")
+					.css("background-color", "green");
+			}
+		});
+
+		$("#enabledWhiteButton").click(function () {
+			var $button = $(this),
+				dataKey = "data-led-state";
+			if($button.attr(dataKey) === "enabled") {
+				$.post("api/setgpio.php?num=79&dir=output&val=0");
+				$button.attr(dataKey, "disabled")
+					.text("Включить белый светодиодик")
+					.css({
+						"background-color": "orange",
+						"color": "white"
+					});
+			}  else {
+				$.post("api/setgpio.php?num=79&dir=output&val=1");
+				
+				$button.attr(dataKey, "enabled")
+					.text("Выключить белый светодиодик")
+					.css({
+						"background-color": "white",
+						"color": "black"
+					});
+			}
+		});
+	});
+</script>
+
+
+
 	<table width="100%">
 		<tr valign=top>
 			<td width=100>
@@ -60,6 +134,18 @@ switch ($fstype) {
 				<p>Вы находитесь на дефолтной странице веб-сервера Виртурилки. Страница располагается в файловой системе по адресу /var/www_user и предназначена для любого пользовательского контента.</p>
 				<p>Можете смело заливать сюда свои файлы, не боясь повредить панель управления (админку).</p>
 				<p>Админка находится по адресу <a href="/admin">/admin</a></p>
+
+
+
+				<div class="led-button" id="enabledRedButton">
+					Включить
+				</div>
+
+				<div class="led-button" id="enabledWhiteButton">
+					Включить белый светодиодик
+				</div>
+
+
 			</td>
 		</tr>
 	</table>
