@@ -1,25 +1,4 @@
-﻿<?php
-// check boot type
-$cmdline = file_get_contents("/proc/cmdline");
-
-// find a "rootfstype=" param
-$fstype = "";
-preg_match_all('/rootfstype=(.{0,}?) /', $cmdline, $params, PREG_SET_ORDER);
-if ($params) $fstype=$params[sizeof($params)-1][1];
-
-switch ($fstype) {
-	case "ext3":
-		$bootmode = "(SD boot)";
-	break;
-	case "jffs2":
-	case "ubifs":
-		$bootmode = "(NAND boot)";
-	break;
-}
-
-?>
-
-<html>
+﻿<html>
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<link rel="icon" href="/faviconBulb.ico" type="image/x-icon">
@@ -80,7 +59,7 @@ switch ($fstype) {
     <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.light.css" />
 
-	<title><?php echo file_get_contents("/etc/virt2real/deviceid") . " " . $bootmode; ?></title>
+	<title>Virt2Real clien app</title>
 <body>
 
 	<script>
@@ -149,14 +128,16 @@ switch ($fstype) {
 	    onValueChanged: function (p) {
 	        var v = p.value ? "1" : "0";
 	        gauge.option("value", 50);
-			$.get("api/setgpio.php", {
-				num: 79,
-				dir: "output",
-				val: v
-			}).done(function () {
 
-	        	gauge.option("value", p.value ? 100 : 0);
-			});
+            $.get("api/setgpio.php", {
+                num: 74,
+                dir: "output",
+                val: v
+            }).then(function success() {
+                gauge.option("value", p.value ? 100 : 0);
+            }, function fail() {
+                gauge.option("value", p.previousValue ? 100 : 0);
+            });
 
 	    }
 	});
