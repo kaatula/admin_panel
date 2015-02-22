@@ -1,181 +1,102 @@
 ﻿<html>
-	<head>
-		<meta http-equiv="content-type" content="text/html;charset=utf-8">
-		<link rel="icon" href="/faviconBulb.ico" type="image/x-icon">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <link rel="icon" href="/faviconBulb.ico" type="image/x-icon">
 
-		<style>
-			html {width:100%; height:100%; padding:0px; font-family: Arial; color:#7c7c7c;}
-			body {width:90%; height:90%; padding:0px; background-image:url('imgs/virt2real-board.jpg'); background-position:  left bottom; background-repeat: no-repeat;}
-			img  {border:none;}
-			a    {color:#7c7c7c;}
-			.window {padding:20px; box-shadow: 0px 0px 160px rgba(0,0,0,0.9); }
-			.window a {color:#0380ea;}
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+            font-family: Arial;
+            color: #7c7c7c;
+        }
 
+        body {
+            width: 90%;
+            height: 90%;
+            padding: 0px;
+            background-image: url('imgs/virt2real-board.jpg');
+            background-position: left bottom;
+            background-repeat: no-repeat;
+        }
 
-			.led-button {
-				font-size: 54px;
-				min-width: 200px;
-				display: inline-block;
-				cursor: pointer;
-				text-align: middle;
-				padding: 20px;
+        img {
+            border: none;
+        }
 
-				-moz-user-select: none;
-				-webkit-user-select: none;
-				-ms-user-select: none;
+        a {
+            color: #7c7c7c;
+        }
 
-				display: none;
-			}
+        .window {
+            padding: 20px;
+            box-shadow: 0px 0px 160px rgba(0,0,0,0.9);
+        }
 
-			#enabledRedButton {
-				background-color: darkred;
-				color: white;
+            .window a {
+                color: #0380ea;
+            }
+            
+        .gpio-indicator {
+            display: table-cell;
+        }
 
-			}
+        .gpio-gauge {
+            width: 200px;
+            height: 100px;
+        }
 
+        .gpio-switch .dx-switch-on {
+            color: #FC510D;
+        }
+    </style>
 
-			#enabledWhiteButton {
-				background-color: orange;
-				color: white;
-			}
-
-			#gauge {
-				width: 200px;
-				height: 100px;
-			}
-
-			#ledSwitch .dx-switch-on {
-				color: #FC510D;
-			}
-		</style>
-	</head>
-	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
-
-	<!--Scripts-->
-	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/globalize/0.1.1/globalize.min.js"></script>
+    <!--Scripts-->
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/globalize/0.1.1/globalize.min.js"></script>
     <script src="http://cdn3.devexpress.com/jslib/14.2.4/js/dx.all.debug.js"></script> <!--Desktop UI widgets-->
-
     <!--Styles-->
     <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="http://cdn3.devexpress.com/jslib/14.2.5/css/dx.light.css" />
 
-	<title>Virt2Real clien app</title>
+    <script src="scripts/app.js"></script>
+    <title>Virt2Real clien app</title>
+</head>
 <body>
 
-	<script>
-	$(document).ready(function () {
-		$("#enabledRedButton").click(function () {
-			var $button = $(this),
-				dataKey = "data-led-state";
-			if($button.attr(dataKey) === "enabled") {
-				$.post("api/setgpio.php?num=74&dir=output&val=0");
-				$button.attr(dataKey, "disabled")
-					.text("Включить")
-					.css("background-color", "darkred");
-			}  else {
-				$.post("api/setgpio.php?num=74&dir=output&val=1");
-				
-				$button.attr(dataKey, "enabled")
-					.text("Выключить")
-					.css("background-color", "green");
-			}
-		});
+    <table width="100%">
+        <tr valign=top>
+            <td width=100>
+                <a href=""><img src="imgs/logo.png"></a>
+            </td>
+            <td align="left" valign="middle">
+                <h1> <img src="imgs/logo2.png"></h1>
+            </td>
+            <td width="400" align="right">
+                <p> <a href="/admin">перейти в админку</a> </p>
+                <p><a href="http://wiki.virt2real.ru/wiki/Схема_компонентов_virt2real_1.1#.D0.9E.D0.BF.D0.B8.D1.81.D0.B0.D0.BD.D0.B8.D0.B5_.D0.B8_.D1.80.D0.B0.D1.81.D0.BF.D0.B8.D0.BD.D0.BE.D0.B2.D0.BA.D0.B0_.D1.80.D0.B0.D0.B7.D1.8A.D1.91.D0.BC.D0.BE.D0.B2">Wiki с разъемами</a></p>
+            </td>
+        </tr>
+    </table>
 
-		$("#enabledWhiteButton").click(function () {
-			var $button = $(this),
-				dataKey = "data-led-state";
-			if($button.attr(dataKey) === "enabled") {
-				$.post("api/setgpio.php?num=79&dir=output&val=0");
-				$button.attr(dataKey, "disabled")
-					.text("Включить белый светодиодик")
-					.css({
-						"background-color": "orange",
-						"color": "white"
-					});
-			}  else {
-				$.post("api/setgpio.php?num=79&dir=output&val=1");
-				
-				$button.attr(dataKey, "enabled")
-					.text("Выключить белый светодиодик")
-					.css({
-						"background-color": "white",
-						"color": "black"
-					});
-			}
-		});
+    <p style="height:20px;">&nbsp;</p>
 
-	var gauge = $("#gauge").dxCircularGauge($.extend(true, {
-		geometry: {
-			startAngle: 180, endAngle: 0
-		},
-		scale: {
-			startValue: 0, endValue: 100,
-			majorTick: {
-				tickInterval: 100
-			}
-		}
-		}, {
-			value: 0,
-			valueIndicator: {
-				type: 'triangleNeedle',
-				color: '#FC510D'
-			}
-		})).dxCircularGauge("instance");
+    <center>
+        <table width="50%" cellspacing="0" cellpadding="0" border="0" class="window">
+            <tr valign="top">
+                <td width="100%" align="center">
+                    <h1>Добро пожаловать!</h1>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="100%" align="center">
+                    <div id="gpioSwitches">
 
-	$("#ledSwitch").dxSwitch({
-		onText: "ВКЛ",
-		offText: "ВЫКЛ",
-	    onValueChanged: function (p) {
-	        var v = p.value ? "1" : "0";
-	        gauge.option("value", 50);
-
-            $.get("api/setgpio.php", {
-                num: 74,
-                dir: "output",
-                val: v
-            }).then(function success() {
-                gauge.option("value", p.value ? 100 : 0);
-            }, function fail() {
-                gauge.option("value", p.previousValue ? 100 : 0);
-            });
-
-	    }
-	});
-});
-</script>
-
-
-
-	<table width="100%">
-		<tr valign=top>
-			<td width=100>
-				<a href=""><img src="imgs/logo.png"></a>
-			</td>
-			<td align="left" valign="middle">
-				<h1> <img src="imgs/logo2.png"></h1>
-			</td>
-			<td width="400" align="right">
-				<p> <a href="/admin">перейти в админку</a> </p>
-			</td>
-		</tr>
-	</table>
-
-	<p style="height:20px;">&nbsp;</p>
-
-	<center>
-	<table width="50%" cellspacing="0" cellpadding="0" border="0" class="window">
-		<tr valign="top">
-			<td width="100%" align="center">
-				<h1>Добро пожаловать!</h1>
-			</td>
-		</tr>
-		<tr valign="top">
-			<td width="100%" align="center">
-                <div id="ledSwitch"></div>
-				<div id="gauge"></div>
-			</td>
-		</tr>
-	</table>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
 </body>
 </html>
