@@ -2,7 +2,7 @@
 declare var DevExpress: any;
 
 class Gpio {
-    constructor(public id: number, public title: string) {
+    constructor(public id: number, public title: string, public inverse: boolean = false) {
     }
 }
 
@@ -13,7 +13,7 @@ var redLed = new Gpio(74, "Red onboard LED"),
 function createSwitch($container: any, gpio: Gpio) {
 
     var $switchContainer = $("<div/>", { "class": "gpio-indicator" }).appendTo($container),
-        $title = $("<h4/>").text(gpio.title + " (" + gpio.id + ")").appendTo($switchContainer),
+        $title = $("<h4/>").html(gpio.title + " <small>(" + gpio.id + ")</small>" + (gpio.inverse ? " <i>инв.</i>" : "")).appendTo($switchContainer),
         $gaugeContainer = $("<div/>", { "class": "gpio-gauge", }).appendTo($switchContainer),
         $switchContainer = $("<div/>", { "class": "gpio-switch" }).appendTo($switchContainer);
 
@@ -44,6 +44,11 @@ function createSwitch($container: any, gpio: Gpio) {
         onText: "ВКЛ",
         offText: "ВЫКЛ",
         onValueChanged: function (p) {
+            if (gpio.inverse) {
+                p.value = !p.value;
+                p.previousValue = !p.previousValue;
+            }
+
             var v = p.value ? "1" : "0";
             gauge.option("value", 50);
 
@@ -65,11 +70,16 @@ function createSwitch($container: any, gpio: Gpio) {
 }
 
 
+$.ajaxSetup({
+    // Disable caching of AJAX responses
+    cache: false
+});
+
 $(document).ready(function () {
     var $container = $("#gpioSwitches");
     createSwitch($container, redLed);
     createSwitch($container, favoriteGpio);  
-    createSwitch($container, new Gpio(86, "Соседний разъем"));  
+    createSwitch($container, new Gpio(86, "Лампочка 220 V", true));  
     
 
 
