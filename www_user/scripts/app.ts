@@ -18,7 +18,7 @@ function createSwitch($container: any, gpio: Gpio) {
         $switchContainer = $("<div/>", { "class": "gpio-switch" }).appendTo($switchContainer);
 
 
-    var gauge = $gaugeContainer.dxCircularGauge($.extend(true, {
+    var gauge = $gaugeContainer.dxCircularGauge({
         geometry: {
             startAngle: 180, endAngle: 0
         },
@@ -27,14 +27,18 @@ function createSwitch($container: any, gpio: Gpio) {
             majorTick: {
                 tickInterval: 100
             }
+        },
+        rangeContainer: {
+            ranges: [
+                { startValue: 80, endValue: 100, color: '#FC510D' }
+            ]
+        },
+        value: 0,
+        valueIndicator: {
+            type: 'triangleNeedle',
+            color: '#FC510D'
         }
-    }, {
-            value: 0,
-            valueIndicator: {
-                type: 'triangleNeedle',
-                color: '#FC510D'
-            }
-        })).dxCircularGauge("instance");
+    }).dxCircularGauge("instance");
 
     $switchContainer.dxSwitch({
         onText: "ВКЛ",

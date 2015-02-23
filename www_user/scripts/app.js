@@ -11,7 +11,7 @@ var redLed = new Gpio(74, "Red onboard LED"), favoriteGpio = new Gpio(79, "Outer
 function createSwitch($container, gpio) {
     var $switchContainer = $("<div/>", { "class": "gpio-indicator" }).appendTo($container), $title = $("<h4/>").text(gpio.title + " (" + gpio.id + ")").appendTo($switchContainer), $gaugeContainer = $("<div/>", { "class": "gpio-gauge" }).appendTo($switchContainer), $switchContainer = $("<div/>", { "class": "gpio-switch" }).appendTo($switchContainer);
 
-    var gauge = $gaugeContainer.dxCircularGauge($.extend(true, {
+    var gauge = $gaugeContainer.dxCircularGauge({
         geometry: {
             startAngle: 180, endAngle: 0
         },
@@ -20,14 +20,18 @@ function createSwitch($container, gpio) {
             majorTick: {
                 tickInterval: 100
             }
-        }
-    }, {
+        },
+        rangeContainer: {
+            ranges: [
+                { startValue: 80, endValue: 100, color: '#FC510D' }
+            ]
+        },
         value: 0,
         valueIndicator: {
             type: 'triangleNeedle',
             color: '#FC510D'
         }
-    })).dxCircularGauge("instance");
+    }).dxCircularGauge("instance");
 
     $switchContainer.dxSwitch({
         onText: "ВКЛ",
