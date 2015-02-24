@@ -1,4 +1,6 @@
-﻿var Gpio = (function () {
+﻿/// <reference path="typings/jquery/jquery.d.ts" />
+/// <reference path="typings/devextreme/dx.devextreme.d.ts" />
+var Gpio = (function () {
     function Gpio(id, title, inverse) {
         if (typeof inverse === "undefined") { inverse = false; }
         this.id = id;
@@ -11,7 +13,11 @@
 var redLed = new Gpio(74, "Red onboard LED"), favoriteGpio = new Gpio(79, "Outer LED");
 
 function createSwitch($container, gpio) {
-    var $switchContainer = $("<div/>", { "class": "gpio-indicator" }).appendTo($container), $title = $("<h4/>").html(gpio.title + " <small>(" + gpio.id + ")</small>" + (gpio.inverse ? " <i>инв.</i>" : "")).appendTo($switchContainer), $gaugeContainer = $("<div/>", { "class": "gpio-gauge" }).appendTo($switchContainer), $switchContainer = $("<div/>", { "class": "gpio-switch" }).appendTo($switchContainer);
+    var $switchContainer = $("<div/>", { "class": "gpio-indicator" }).appendTo($container), $title = $("<h4/>").html(gpio.title + " <small>(" + gpio.id + ")</small>" + (gpio.inverse ? " <i>инв.</i>" : "")).appendTo($switchContainer), $gaugeContainer = $("<div/>", { "class": "gpio-gauge" }).appendTo($switchContainer), $loadingContainer = $("<div/>", { "class": "gpio-loading" }).appendTo($gaugeContainer), $switchContainer = $("<div/>", { "class": "gpio-switch" }).appendTo($switchContainer);
+
+    var indicator = $loadingContainer.dxLoadIndicator({
+        visible: false
+    }).dxLoadIndicator("instance");
 
     var gauge = $gaugeContainer.dxCircularGauge({
         geometry: {
@@ -47,16 +53,19 @@ function createSwitch($container, gpio) {
             var v = p.value ? "1" : "0";
             gauge.option("value", 50);
 
+            indicator.option("visible", true);
             $.get("api/setgpio.php", {
                 num: gpio.id,
                 dir: "output",
                 val: v
             }).then(function success() {
                 gauge.option("value", p.value ? 100 : 0);
+                indicator.option("visible", false);
             }, function fail(err, _, descr) {
                 gauge.option("value", p.previousValue ? 100 : 0);
                 console.log(arguments);
                 DevExpress.ui.notify("Network problem: " + descr, "error", 3000);
+                indicator.option("visible", false);
             });
         }
     });

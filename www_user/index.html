@@ -3,6 +3,7 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <link rel="icon" href="/faviconBulb.ico" type="image/x-icon">
 
+
     <style>
         html {
             width: 100%;
@@ -37,7 +38,7 @@
             .window a {
                 color: #0380ea;
             }
-            
+
         .gpio-indicator {
             display: table-cell;
         }
@@ -45,20 +46,34 @@
         .gpio-gauge {
             width: 200px;
             height: 100px;
+            margin-top: -30px;
+            position: relative;
         }
+
+        .gpio-loading {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+        }
+
 
         .gpio-switch .dx-switch-on {
             color: #FC510D;
         }
 
-    #gpioSwitches {
-        background-color: white;
-        padding: 20px;
-        -ms-touch-action: pinch-zoom double-tap-zoom;
-    }
+        #gpioSwitches {
+            background-color: white;
+            padding: 20px;
+            -ms-touch-action: pinch-zoom double-tap-zoom;
+            text-align: center
+        }
 
-        #gpioSwitches .dx-switch {
-            -ms-touch-action: none;
+            #gpioSwitches .dx-switch {
+                -ms-touch-action: none;
+            }
+
+        #gpioSwitches .dx-loadindicator-segment {
+            background: #FC510D;
         }
     </style>
 
@@ -100,7 +115,7 @@
                 </td>
             </tr>
             <tr valign="top">
-                <td width="100%" align="center">
+                <td width="100%">
                     <div id="gpioSwitches">
 
                     </div>
