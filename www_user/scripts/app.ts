@@ -5,7 +5,29 @@
 class Gpio {
     constructor(public id: number, public title: string, public inverse: boolean = false) {
     }
+
+    public value: boolean;
+
+    get controlValue(): boolean {
+        if (this.inverse) return !this.value;
+        return this.value;
+    }
+
+    set controlValue(value: boolean) {
+        if (this.inverse) {
+            this.value = !value;
+        } else {
+            this.value = value;
+        }
+    }
 }
+
+
+interface GpioService {
+    getValue(id: number): JQueryPromise<any>;
+    setValue(id: number, value: boolean): JQueryPromise<any>;
+}
+
 
 var redLed = new Gpio(74, "Red onboard LED"),
     favoriteGpio = new Gpio(79, "Outer LED");
@@ -25,6 +47,15 @@ function createSwitch($container: any, gpio: Gpio) {
             visible: false        
         }).dxLoadIndicator("instance");
 
+    var updateWidgetsValues = function (gpio: Gpio) {
+        var v = gpio.controlValue;
+
+        gauge.option("value", v ? 100 : 0);
+        switchWidget.option("value", v);
+    }
+
+    //var switchGpioOutputValue = function (gpio: Gpio, value: boolean) : JQueryPromise<any> {
+    //}
 
     var gauge = <DevExpress.viz.gauges.dxCircularGauge><any>$gaugeContainer.dxCircularGauge({
         geometry: {
@@ -41,42 +72,39 @@ function createSwitch($container: any, gpio: Gpio) {
                 { startValue: 80, endValue: 100, color: '#FC510D' }
             ]
         },
-        value: 0,
         valueIndicator: {
             type: 'triangleNeedle',
             color: '#FC510D'
         }
     }).dxCircularGauge("instance");
 
-    $switchContainer.dxSwitch({
+    var switchWidget = <DevExpress.ui.dxSwitch><any>$switchContainer.dxSwitch({
         onText: "ВКЛ",
         offText: "ВЫКЛ",
         onValueChanged: function (p) {
-            if (gpio.inverse) {
-                p.value = !p.value;
-                p.previousValue = !p.previousValue;
-            }
-
-            var v = p.value ? "1" : "0";
+            gpio.controlValue = p.value;
             gauge.option("value", 50);
 
             indicator.option("visible", true);
+            //switchGpioOutputValue(gpio, p.value)
+
             $.get("api/setgpio.php", {
                 num: gpio.id,
                 dir: "output",
-                val: v
+                val: gpio.value ? "1" : "0"
             }).then(function success() {
-                    gauge.option("value", p.value ? 100 : 0);
-                    indicator.option("visible", false);
-                }, function fail(err, _, descr) {
-                    gauge.option("value", p.previousValue ? 100 : 0);
-                    console.log(arguments);
-                    DevExpress.ui.notify("Network problem: " + descr, "error", 3000);
-                    indicator.option("visible", false);
-                });
+                updateWidgetsValues(gpio);
+                indicator.option("visible", false);
+            }, function fail(err, _, descr) {
+                gpio.controlValue = p.previousValue;
+                DevExpress.ui.notify("Network problem: " + descr, "error", 3000);
+                indicator.option("visible", false);
+            });
 
         }
-    });
+    }).dxSwitch("instance");
+
+    updateWidgetsValues(gpio);
 }
 
 
@@ -87,9 +115,23 @@ $.ajaxSetup({
 
 $(document).ready(function () {
     var $container = $("#gpioSwitches");
-    createSwitch($container, redLed);
-    createSwitch($container, favoriteGpio);  
-    createSwitch($container, new Gpio(86, "Лампочка 220 V", true));  
+
+    var gpios = [
+        redLed,
+        favoriteGpio,
+        new Gpio(86, "Лампочка 220 V", true)
+    ];
+
+    $.get("/api/get2.php").then(
+        function success(result) {
+            console.log(result);
+
+            $.each(gpios, function (_, item) {
+                item.value = result[item.id] === "1";
+                createSwitch($container, item);
+            });
+
+        });
     
 
 
