@@ -1,6 +1,6 @@
 ﻿/// <reference path="typings/jquery/jquery.d.ts" />
 /// <reference path="typings/devextreme/dx.devextreme.d.ts" />
-
+/// <reference path="typings/swfobject/swfobject.d.ts" />
 
 class Gpio {
     constructor(public id: number, public title: string, public inverse: boolean = false) {
@@ -113,6 +113,49 @@ $.ajaxSetup({
     cache: false
 });
 
+
+
+var runRtmpBroadcast = function (hostname: string) {
+    var swfVersionStr = "11.1.0";
+    var xiSwfUrlStr = "playerProductInstall.swf";
+    var flashvars : any = {};
+    flashvars.host = "rtmp://" + hostname + "/live";
+    flashvars.stream = "v2r";
+    flashvars.width = 640;
+    flashvars.height = 480;
+    var params : any = {};
+    params.quality = "high";
+    params.bgcolor = "#000000";
+    params.allowscriptaccess = "sameDomain";
+    params.allowfullscreen = "true";
+    var attributes : any = {};
+    attributes.id = "rtmp_easy_viewer";
+    attributes.name = "rtmp_easy_viewer";
+    attributes.align = "middle";
+    swfobject.embedSWF(
+        "swf/rtmp_easy_viewer.swf", "flashContent",
+        "640", "480",
+        swfVersionStr, xiSwfUrlStr,
+        flashvars, params, attributes);
+    swfobject.createCSS("#flashContent", "display:block;text-align:left;");
+
+    var broadcastLocation = "rtmp://" + hostname + "/live/v2r";
+    var bitrate = "120000";
+    var enablesound = 0;
+
+
+    $.post("api/runRtmp.php", { bitrate: bitrate, enablesound: enablesound, broadcastLocation: broadcastLocation.valueOf() }, function (response, status, xhr) {
+        if (status == "success") {
+            DevExpress.ui.notify(response, "success", 3000);
+        }
+        if (status == "error") {
+            DevExpress.ui.notify("Network problem: " + status, "error", 3000);
+        }
+    });
+};
+
+
+
 $(document).ready(function () {
     var $container = $("#gpioSwitches");
 
@@ -121,6 +164,15 @@ $(document).ready(function () {
         favoriteGpio,
         new Gpio(86, "Лампочка 220 V", true)
     ];
+
+    var hostname = window.location.hostname;
+
+    //#IFDEBUG
+    if (hostname === "localhost") {
+        hostname = "192.168.3.1";
+    }
+    //
+    runRtmpBroadcast(hostname);
 
     $.get("/api/get2.php").then(
         function success(result) {
