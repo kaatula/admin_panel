@@ -51,6 +51,10 @@ function ParseParams($cmdline, $template){
 				$template = str_replace('{lanselected1}', $option1, $template);
 				$template = str_replace('{lanselected2}', $option2, $template);
 			break;
+			case "ks8851.hwaddr": 
+				$tmp = explode(',',$element[1]);	
+				$template = str_replace('{lan0mac}', $tmp[0], $template);
+			break;
 			case "lan1":
 				if ($element[1] == "on") $option1 = "checked"; else $option2 = "checked";
 				$template = str_replace('{lan1selected1}', $option1, $template);
@@ -98,11 +102,14 @@ function ParseParams($cmdline, $template){
 				if ($element[1] == "ov2643") $option2 = "checked"; 
 				else
 				if ($element[1] == "ov5642") $option3 = "checked"; 
+				else
+				if ($element[1] == "ov5640") $option4 = "checked"; 
 				else $option1 = "checked";
 
 				$template = str_replace('{cameraselected1}', $option1, $template);
 				$template = str_replace('{cameraselected2}', $option2, $template);
 				$template = str_replace('{cameraselected3}', $option3, $template);
+				$template = str_replace('{cameraselected4}', $option4, $template);
 			break;
 			case "spi0": 
 				if ($element[1] == "on") $option1 = "checked"; else $option2 = "checked";
@@ -124,6 +131,14 @@ function ParseParams($cmdline, $template){
 			case "davinci_wdt.heartbeat": 
 				$tmp = explode(',',$element[1]);	
 				$template = str_replace('{wdtval1}', $tmp[0], $template);
+			break;
+			case "dm365_ccdc.top_offset": 
+				$tmp = explode(',',$element[1]);	
+				$template = str_replace('{hdmi_voffset}', $tmp[0], $template);
+			break;
+			case "ghid": 
+				$tmp = explode(',',$element[1]);	
+				$template = str_replace('{ghidval}', $tmp[0], $template);
 			break;
 			case "quiet":
 				$option2 = "checked";
@@ -195,6 +210,9 @@ function ParseParams($cmdline, $template){
 	}
 
 	/* clear unsetted fields */
+	$template = str_replace('{hdmi_voffset}', "", $template);
+	$template = str_replace('{ghidval}', "", $template);
+	$template = str_replace('{lan0mac}', "", $template);
 	$template = str_replace('{lan1mac}', "", $template);
 	$template = str_replace('{wifi_ssid}', "", $template);
 	$template = str_replace('{wifi_pass}', "", $template);

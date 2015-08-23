@@ -22,6 +22,7 @@ $lang = array(// common items
               'M_LOCAL_NET'          => 'Local network',
               'M_LAN'                => 'LAN',
               'M_LAN1'                => 'LAN1 (EMAC)',
+			  'M_LAN0MAC'			  => 'LAN0 MAC-address',
 			  'M_LAN1MAC'			  => 'LAN1 MAC-address',
               'M_LEDS'               => 'LEDs',
               'M_BLUE'               => 'Blue',
@@ -48,6 +49,7 @@ $lang = array(// common items
               'M_FS_TYPE'            => 'FS type',
               'M_OV2643'             => 'OV2643',
               'M_OV5642'             => 'OV5642',
+              'M_OV5640'             => 'OV5640',
               'M_VIDEO_OUT'          => 'Video out',
               'M_COMPOSITE'          => 'Composite',
               'M_LCD'                => 'LCD',
@@ -65,6 +67,10 @@ $lang = array(// common items
               'M_WLAN_PASS'          => 'Network password',
               'M_WATCHDOG'	         => 'Watchdog',
 			  'M_WDTTIMEOUT'		 => 'Timeout',
+			  'M_GHID_TITLE'		 => 'HID emulation',
+			  'M_GHID'		 		 => 'Emulate devices',
+			  'M_HDMI'		 		 => 'HDMI',
+			  'M_HDMI_VOFFSET' 		 => 'Vertical offset',
               );
 
 ?>
